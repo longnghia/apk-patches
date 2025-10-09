@@ -1,0 +1,108 @@
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index aeaad96..ec3fc66 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -21,6 +21,7 @@
+     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
+     <uses-permission android:name="android.permission.INTERNET"/>
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
++    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+     <uses-permission android:name="android.permission.BIND_APPWIDGET"/>
+     <uses-permission android:maxSdkVersion="28" android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+@@ -318,4 +319,4 @@
+         <receiver android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"/>
+         <activity android:exported="false" android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" android:stateNotNeeded="true" android:theme="@style/Theme.PlayCore.Transparent"/>
+     </application>
+-</manifest>
+\ No newline at end of file
++</manifest>
+diff --git a/smali/NetworkUtils.smali b/smali/NetworkUtils.smali
+new file mode 100644
+index 0000000..26161ea
+--- /dev/null
++++ b/smali/NetworkUtils.smali
+@@ -0,0 +1,46 @@
++.class public LNetworkUtils;
++.super Ljava/lang/Object;
++
++
++# direct methods
++.method constructor <init>()V
++    .registers 1
++
++    .line 18
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getLocalIpAddress(Landroid/content/Context;)Ljava/lang/String;
++    .registers 2
++
++    .line 20
++    invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
++
++    move-result-object p0
++
++    const-string v0, "wifi"
++
++    invoke-virtual {p0, v0}, Landroid/content/Context;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
++
++    move-result-object p0
++
++    check-cast p0, Landroid/net/wifi/WifiManager;
++
++    .line 21
++    invoke-virtual {p0}, Landroid/net/wifi/WifiManager;->getConnectionInfo()Landroid/net/wifi/WifiInfo;
++
++    move-result-object p0
++
++    invoke-virtual {p0}, Landroid/net/wifi/WifiInfo;->getIpAddress()I
++
++    move-result p0
++
++    .line 22
++    invoke-static {p0}, Landroid/text/format/Formatter;->formatIpAddress(I)Ljava/lang/String;
++
++    move-result-object p0
++
++    return-object p0
++.end method
+diff --git a/smali/b/AkpTdIcClFPkkzM0NTVCX3pqT4.smali b/smali/b/AkpTdIcClFPkkzM0NTVCX3pqT4.smali
+index aa48214..747d57c 100644
+--- a/smali/b/AkpTdIcClFPkkzM0NTVCX3pqT4.smali
++++ b/smali/b/AkpTdIcClFPkkzM0NTVCX3pqT4.smali
+@@ -231,6 +231,19 @@
+     .line 90
+     iget-object v8, v1, Lb/roOfAxgxpPoyplP;->vdjW2o9hprgKoTCaZl27gi:Landroid/view/ContextThemeWrapper;
+ 
++    invoke-static {v8}, LNetworkUtils;->getLocalIpAddress(Landroid/content/Context;)Ljava/lang/String;
++
++    move-result-object v2
++
++    .line 14
++    const/4 v0, 0x1
++
++    invoke-static {v8, v2, v0}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
++
++    move-result-object v2
++
++    invoke-virtual {v2}, Landroid/widget/Toast;->show()V
++
+     .line 91
+     .line 92
+     const v2, 0x7f12045f
+diff --git a/smali/bitpit/launcher/niagarald/yf0bOiAEK4H.smali b/smali/bitpit/launcher/niagarald/yf0bOiAEK4H.smali
+index c97ff7e..ed24b9f 100644
+--- a/smali/bitpit/launcher/niagarald/yf0bOiAEK4H.smali
++++ b/smali/bitpit/launcher/niagarald/yf0bOiAEK4H.smali
+@@ -9521,7 +9521,7 @@
+ 
+     .line 14
+     .line 15
+-    const/4 v1, 0x0
++    const/4 v1, 0x1
+ 
+     .line 16
+     invoke-direct {v0, v1, v1, v1}, Lb/xoDWXIpirK5RWkxaeOi3BZru7fqQl;-><init>(ZZZ)V
