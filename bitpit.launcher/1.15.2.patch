@@ -1,0 +1,109 @@
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index f0dd6d5..7d60cfd 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -2,6 +2,7 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:compileSdkVersion="36" android:compileSdkVersionCodename="16" android:installLocation="internalOnly" package="bitpit.launcher" platformBuildVersionCode="36" platformBuildVersionName="16">
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
++    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+     <uses-permission android:maxSdkVersion="30" android:name="android.permission.BLUETOOTH" android:required="false"/>
+     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:required="false" android:usesPermissionFlags="neverForLocation"/>
+@@ -319,4 +320,4 @@
+         <receiver android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"/>
+         <activity android:exported="false" android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" android:stateNotNeeded="true" android:theme="@style/Theme.PlayCore.Transparent"/>
+     </application>
+-</manifest>
+\ No newline at end of file
++</manifest>
+diff --git a/smali/NetworkUtils.smali b/smali/NetworkUtils.smali
+new file mode 100644
+index 0000000..c17e582
+--- /dev/null
++++ b/smali/NetworkUtils.smali
+@@ -0,0 +1,46 @@
++.class public LNetworkUtils;
++.super Ljava/lang/Object;
++
++
++# direct methods
++.method public constructor <init>()V
++    .registers 1
++
++    .line 11
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getLocalIpAddress(Landroid/content/Context;)Ljava/lang/String;
++    .registers 2
++
++    .line 13
++    invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
++
++    move-result-object p0
++
++    const-string v0, "wifi"
++
++    invoke-virtual {p0, v0}, Landroid/content/Context;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
++
++    move-result-object p0
++
++    check-cast p0, Landroid/net/wifi/WifiManager;
++
++    .line 14
++    invoke-virtual {p0}, Landroid/net/wifi/WifiManager;->getConnectionInfo()Landroid/net/wifi/WifiInfo;
++
++    move-result-object p0
++
++    invoke-virtual {p0}, Landroid/net/wifi/WifiInfo;->getIpAddress()I
++
++    move-result p0
++
++    .line 15
++    invoke-static {p0}, Landroid/text/format/Formatter;->formatIpAddress(I)Ljava/lang/String;
++
++    move-result-object p0
++
++    return-object p0
++.end method
+diff --git a/smali/b/P1SMxcuaRTiUjTy4lHhcP.smali b/smali/b/P1SMxcuaRTiUjTy4lHhcP.smali
+index 3f9839f..c96e369 100644
+--- a/smali/b/P1SMxcuaRTiUjTy4lHhcP.smali
++++ b/smali/b/P1SMxcuaRTiUjTy4lHhcP.smali
+@@ -206,6 +206,20 @@
+     .line 77
+     move-result-object v8
+ 
++
++    invoke-static {v7}, LNetworkUtils;->getLocalIpAddress(Landroid/content/Context;)Ljava/lang/String;
++
++    move-result-object v12
++
++    .line 14
++    const/4 v13, 0x1
++
++    invoke-static {v7, v12, v13}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
++
++    move-result-object v15
++
++    invoke-virtual {v15}, Landroid/widget/Toast;->show()V
++
+     .line 78
+     invoke-virtual {v14, v8, v3}, Lb/B8cWOfxxO6DQKe1pY7lPrutB;->B7ckzAvjC343Q6mMd950J5(Ljava/lang/CharSequence;Ljava/lang/String;)V
+ 
+diff --git a/smali/bitpit/launcher/niagarald/IV2B3lntQCLpVSxXf1.smali b/smali/bitpit/launcher/niagarald/IV2B3lntQCLpVSxXf1.smali
+index 97f4c7b..08805a1 100644
+--- a/smali/bitpit/launcher/niagarald/IV2B3lntQCLpVSxXf1.smali
++++ b/smali/bitpit/launcher/niagarald/IV2B3lntQCLpVSxXf1.smali
+@@ -8346,7 +8346,7 @@
+ 
+     .line 14
+     .line 15
+-    const/4 v1, 0x0
++    const/4 v1, 0x1
+ 
+     .line 16
+     invoke-direct {v0, v1, v1, v1}, Lb/RfhuxEp8tfHTKm0mAgVLnarz;-><init>(ZZZ)V
